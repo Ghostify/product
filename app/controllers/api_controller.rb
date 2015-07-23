@@ -6,10 +6,13 @@ class ApiController < ApplicationController
     # if anti_bot.eql? "noentry"
       if body = JSON.parse(request.body.read)
         if res = post_json("http://localhost:9200/ghost/videos/", body)
-          res = JSON.parse(res)
+          render :json => JSON.parse(res)
+	end
       else
         render :json => "Cannot parse request.body.read"
       end
+
+	render :json => "Error"
     # else
     #   render :json => "Password incorrect." + params.inspect
     # end
