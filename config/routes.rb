@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   get "elastic" => "api#elastic_get"
-  post "elastic" => "api#elastic_create"
+  post "elastic/create" => "api#elastic_create"
+  get 'search' => "api#elastic_search"
   root "home#index"
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
