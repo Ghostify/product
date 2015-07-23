@@ -5,7 +5,8 @@ class ApiController < ApplicationController
     #
     # if anti_bot.eql? "noentry"
       if body = JSON.parse(request.body.read)
-        render :json => post_json("http://localhost:9200/ghost/videos/", body)
+        if res = post_json("http://localhost:9200/ghost/videos/", body)
+          res = JSON.parse(res)
       else
         render :json => "Cannot parse request.body.read"
       end
