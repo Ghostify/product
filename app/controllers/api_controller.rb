@@ -4,30 +4,30 @@ class ApiController < ApplicationController
     # anti_bot = params["pass"]
     #
     # if anti_bot.eql? "noentry"
-      if body = JSON.parse(request.body.read)
-        if res = post_json("http://localhost:9200/ghost/videos/", body)
-          render :json => JSON.parse(res)
-	end
+    if body = JSON.parse(request.body.read)
+      if res = post_json("http://localhost:9200/ghost/videos/", body)
+        render :json => JSON.parse(res)
       else
-        render :json => "Cannot parse request.body.read"
+        render :json => "Error"
       end
-
-	render :json => "Error"
+    else
+      render :json => "Cannot parse request.body.read"
+    end
     # else
     #   render :json => "Password incorrect." + params.inspect
     # end
   end
 
   def elastic_get
-    render :json => get_json("http://localhost:9200/ghost/videos/_search/?size=100&pretty=1")
+    render :json => get_json("http://localhost:9200/ghost/videos/_search/")
   end
 
   def elastic_search
     search = params["q"]
     if search
-      render :json => get_search("http://localhost:9200/ghost/videos/_search/?size=100&pretty=1", search)
+      render :json => get_search("http://localhost:9200/ghost/videos/_search?size=100&pretty=1", search)
     else
-      render :json => "Missing search"
+      render :json => "Missing search!"
     end
   end
 
@@ -47,9 +47,12 @@ class ApiController < ApplicationController
 
   def get_search(url, q)
     query = hash_tree
-    query["query"]["wildcard"]["transcript"] = "#{q}*"
-    puts "JSON:: #{query.to_json}"
-    return HTTParty.get(url,query)
+    # query["query"]["wildcard"]["transcript"] = "#{q}*"
+    # query["query"]["match"]["Hello"] = "#{q}*"
+    # puts "JSON:: #{query.to_json}"
+    query = (url + "&q=" + q)
+    puts query
+    return HTTParty.get(query)
   end
 
   def hash_tree
