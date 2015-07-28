@@ -25,7 +25,7 @@ class ApiController < ApplicationController
   def elastic_search
     search = params["q"]
     if search
-      render :json => get_search("http://localhost:9200/ghost/videos/_search?size=100&pretty=1", search)
+      render :json => get_search("http://localhost:9200/ghost/videos/_search?size=2000&pretty=1", search)
     else
       render :json => "Missing search!"
     end
