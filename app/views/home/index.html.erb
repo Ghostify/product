@@ -1,1 +1,66 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<style>
+.highlight{
+  background-color: yellow;
+}
+</style>
+
 <h1>Ghost</h1>
+<form method="get" action="/search" id="search-form">
+<input name="q" id="q" type="text"/> <input type="submit" value="search" id="search"></input>
+</form>
+
+<div id="occurances"></div>
+<div id="videos"></div>
+
+<div id="took"></div>
+<div id="best_match"></div>
+
+<div id="list"></div>
+<ul id="results"></ul>
+
+<script type="text/javascript">
+  $("#search-form").submit(function(){
+    $("body").append("<img id=\"wait\" src=\"http://i.stack.imgur.com/FhHRx.gif\"></img>")
+    $("#results").html("");
+    $("#occurances").html("");
+    var term = $("#q").val();
+    $.ajax({url:"/search",
+    data: {q: term},
+     success: function(result){
+        $("#wait").remove();
+
+        parseResults(result);
+        var reg = new RegExp(term,"gi")
+        var occurances = $("#results").html().match(reg).length
+        $("#occurances").html(occurances + " occurances in");
+        highlightSearchTerm(term);
+      }
+    })
+    return false;
+  });
+
+  function highlightSearchTerm(term){
+    var reg = new RegExp(term,"gi")
+    $("#results").html($("#results").html().replace(reg, "<span class='highlight'>"+term +"</span>"));
+  }
+
+
+  function parseResults(result){
+    console.log(result);
+
+    var total = result["hits"]["total"]
+    $("#took").html("Took: " + total + "ms");
+    var best_match = result["hits"]["max_score"]
+    $("#best_match").html("Best match: " + (best_match * 100) + "%");
+    var matches = result["hits"]["hits"]
+    $("#videos").html(matches.length + " videos");
+
+    matches.forEach(function(m){
+      console.log(m);
+      m = m["_source"]
+      $("#results").append("<li>" + m["transcript"] + " - " + m["full_link"] + "</li>");
+
+    })
+  }
+</script>
